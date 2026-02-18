@@ -1,0 +1,98 @@
+import numpy as np
+import pandas as pd
+
+from sklearn.model_selection import KFold
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import LabelEncoder
+
+from xgboost import XGBRegressor
+
+
+train = pd.read_csv("/kaggle/input/student-performance-prediction-machine-learning-challenge/train.csv")
+test = pd.read_csv("/kaggle/input/student-performance-prediction-machine-learning-challenge/test.csv")
+
+TARGET = "productivity_score"
+
+test_ids = test["id"]
+
+
+def create_features(df):
+    df["study_efficiency"] = df["study_hours_per_day"] / (df["phone_usage_hours"] + 1)
+    df["sleep_quality"] = df["sleep_hours"] * df["focus_score"]
+    df["distraction_score"] = (
+        df["phone_usage_hours"]
+        + df["social_media_hours"]
+        + df["youtube_hours"]
+        + df["gaming_hours"]
+    )
+    df["productivity_index"] = (
+        df["study_hours_per_day"]
+        * df["focus_score"]
+        * df["attendance_percentage"] / 100
+    )
+    return df
+
+
+train = create_features(train)
+test = create_features(test)
+
+
+cat_cols = train.select_dtypes(include=["object"]).columns
+
+for col in cat_cols:
+    le = LabelEncoder()
+    full = pd.concat([train[col], test[col]], axis=0)
+    le.fit(full.astype(str))
+    train[col] = le.transform(train[col].astype(str))
+    test[col] = le.transform(test[col].astype(str))
+
+
+X = train.drop(columns=[TARGET, "id"], errors="ignore")
+y = train[TARGET]
+
+test_X = test.drop(columns=["id"], errors="ignore")
+
+X, test_X = X.align(test_X, join="left", axis=1, fill_value=0)
+
+
+kf = KFold(n_splits=5, shuffle=True, random_state=42)
+
+oof = np.zeros(len(X))
+preds = np.zeros(len(test_X))
+
+
+for fold, (tr_idx, val_idx) in enumerate(kf.split(X)):
+
+    X_tr, X_val = X.iloc[tr_idx], X.iloc[val_idx]
+    y_tr, y_val = y.iloc[tr_idx], y.iloc[val_idx]
+
+    model = XGBRegressor(
+        n_estimators=1500,
+        learning_rate=0.01,
+        max_depth=6,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        random_state=42,
+        tree_method="hist",
+        n_jobs=-1
+    )
+
+    model.fit(X_tr, y_tr, eval_set=[(X_val, y_val)], verbose=200)
+
+    oof[val_idx] = model.predict(X_val)
+    preds += model.predict(test_X) / 5
+
+
+rmse = np.sqrt(mean_squared_error(y, oof))
+
+print("CV RMSE:", rmse)
+
+
+submission = pd.DataFrame({
+    "id": test_ids,
+    "productivity_score": preds
+})
+
+submission.to_csv("submission.csv", index=False)
+
+submission.head()
