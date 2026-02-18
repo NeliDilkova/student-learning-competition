@@ -33,10 +33,20 @@ if __name__ == "__main__":
     target_col = "productivity_score"
     main_id_col = "id"
 
+    # 0) finale kategoriale Features festlegen
+    cat_features_final = [
+        "stress_level_bin",
+        "breaks_per_day_bin",
+        "age_bin",
+    ]
+    cat_features_final = [c for c in cat_features_final if c in train_fe.columns]
+    print("\n===== Finale kategoriale Features =====")
+    print(cat_features_final)
+
     # 1) 'id' explizit entfernen
     feature_cols = [c for c in train_fe.columns if c not in [main_id_col, target_col]]
 
-    # 2) nur numerische Features für Korrelationsheatmap
+    # 2) nur numerische Features für Korrelationsanalyse
     num_cols = train_fe[feature_cols].select_dtypes(
         include=["int64", "float64", "float32"]
     ).columns.tolist()
@@ -75,12 +85,11 @@ if __name__ == "__main__":
     plt.suptitle("Pairplot Top-Features vs. productivity_score", y=1.02)
     plt.show()
 
-    # 5)  5) Hoch korrelierte Feature-Paare filtern (|corr| > 0.6)
+    # 5) Hoch korrelierte Feature-Paare filtern (|corr| > 0.6) – konservative Variante
     high_corr_threshold = 0.6
-
     corr_feat = train_fe[num_cols].corr().abs()
 
-    # Feature-Namen nach |Korrelation mit Ziel| sortieren (absteigend)
+    # nach |corr mit Ziel| sortieren
     abs_target_corr = corr_with_target.abs().reindex(num_cols).fillna(0.0)
     sorted_features = abs_target_corr.sort_values(ascending=False).index.tolist()
 
@@ -91,61 +100,52 @@ if __name__ == "__main__":
         if f in dropped_features:
             continue
 
-        # dieses Feature behalten
         kept_features.append(f)
 
-        # alle Features finden, die stark mit f korrelieren
         high_corr_partners = corr_feat.index[corr_feat[f] > high_corr_threshold].tolist()
-
-        # sich selbst aus der Liste entfernen
         if f in high_corr_partners:
             high_corr_partners.remove(f)
 
-        # diese Partner droppen (falls sie später in der Schleife kämen)
         for partner in high_corr_partners:
             dropped_features.add(partner)
 
-    print(f"\n===== Stark korrelierte Features (|corr| > {high_corr_threshold}) – gedroppte: =====")
+    print(
+        f"\n===== Stark korrelierte Features (|corr| > {high_corr_threshold}) – gedroppte: ====="
+    )
     print(dropped_features)
 
-    # 6) Numerische Featureliste nach Hochkorrelation bereinigen
     pruned_num_cols = kept_features
     print("\n===== Numerische Features nach Hochkorrelations-Filter =====")
     print(pruned_num_cols)
 
-    # 7) Log-Transformation prüfen (Train + Test identisch erweitern)
+    # 6) Log-Transformation prüfen (Train + Test identisch erweitern)
     log_suffix = "_log"
     log_candidates = pruned_num_cols
 
-    # Korrelationen mit Ziel für Original (TRAIN)
     corr_with_target_pruned = (
         train_fe[pruned_num_cols + [target_col]]
         .corr()[target_col]
         .drop(index=target_col)
     )
 
-    better_log_features = []   # Features, bei denen log besser ist
-    log_feature_names = {}     # Mapping original -> log-name
+    better_log_features = []
+    log_feature_names = {}
 
     for col in log_candidates:
         col_values_train = train_fe[col]
 
-        # nur positive Werte sinnvoll log-transformieren
         if (col_values_train <= 0).any():
             continue
 
         log_col = col + log_suffix
         log_feature_names[col] = log_col
 
-        # log-Spalte in TRAIN und TEST erzeugen
         train_fe[log_col] = np.log(col_values_train)
         if col in test_fe.columns:
             test_fe[log_col] = np.log(test_fe[col].clip(lower=1e-6))
 
-        # Korrelation Original vs. Ziel (TRAIN)
         corr_orig = abs(corr_with_target_pruned[col])
 
-        # Korrelation Log vs. Ziel (TRAIN)
         corr_log = abs(
             train_fe[[log_col, target_col]]
             .corr()[target_col]
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     print("\n===== Features, bei denen log-Version besser ist =====")
     print(better_log_features)
 
-    # 8) Finale numerische Feature-Liste: Original durch log ersetzen, wo sinnvoll
+    # 7) Finale numerische Features: Original vs. log
     final_num_cols = []
     for col in pruned_num_cols:
         if col in better_log_features:
@@ -172,11 +172,12 @@ if __name__ == "__main__":
     print("\n===== Finale numerische Features (inkl. log-Entscheidung) =====")
     print(final_num_cols)
 
-    # 9) Neues, bereinigtes Feature-Set speichern (id + Ziel + finale numerische)
+    # 8) Neues, bereinigtes Feature-Set speichern (id + Ziel + numerische + kategoriale)
     keep_train_cols = []
     if main_id_col in train_fe.columns:
         keep_train_cols.append(main_id_col)
     keep_train_cols.extend(final_num_cols)
+    keep_train_cols.extend(cat_features_final)
     if target_col in train_fe.columns:
         keep_train_cols.append(target_col)
 
@@ -184,6 +185,7 @@ if __name__ == "__main__":
     if main_id_col in test_fe.columns:
         keep_test_cols.append(main_id_col)
     keep_test_cols.extend(final_num_cols)
+    keep_test_cols.extend(cat_features_final)
 
     train_fe_pruned = train_fe[keep_train_cols].copy()
     test_fe_pruned = test_fe[keep_test_cols].copy()

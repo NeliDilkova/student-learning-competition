@@ -117,6 +117,13 @@ if __name__ == "__main__":
             df["age_binned"] = pd.qcut(df["age"], q=5, labels=False, duplicates="drop")
             print(f"{df_name}: Features 'age_bin' und 'age_binned' erstellt.")
 
+    # 7b) Binned-Variablen explizit als kategorial markieren
+    for df_name, df in [("TRAIN", train), ("TEST", test)]:
+        for col in ["stress_level_bin", "breaks_per_day_bin", "age_bin", "age_binned"]:
+            if col in df.columns:
+                df[col] = df[col].astype("category")
+                print(f"{df_name}: '{col}' als category gecastet.")
+
     # 8) Study-Efficiency
     for df_name, df in [("TRAIN", train), ("TEST", test)]:
         if {"study_hours_per_day", "phone_usage_hours"}.issubset(df.columns):
@@ -162,7 +169,7 @@ if __name__ == "__main__":
         if {"age", "screentime_hours"}.issubset(df.columns):
             df["age_screentime_interaction"] = df["age"] * df["screentime_hours"]
 
-    # 12) ANOVA für binned Features
+    # 12) ANOVA für binned Features (nur TRAIN)
     binned_cols = [
         "stress_level_bin",
         "breaks_per_day_bin",
@@ -191,11 +198,13 @@ if __name__ == "__main__":
         else:
             print(f"{col}: zu wenige Beobachtungen für ANOVA.")
 
-    # 13) numerische Spalten bestimmen (inkl. neuer Features, ohne Ziel)
+    # 13) numerische Spalten bestimmen (ohne Ziel, ohne kategoriale Bins)
     num_cols = train.select_dtypes(include=["int64", "float64", "float32"]).columns.tolist()
     if target_col in num_cols:
         num_cols.remove(target_col)
-    print("\n===== Numerische Spalten (inkl. ID) =====")
+    if main_id_col in num_cols:
+        num_cols.remove(main_id_col)
+    print("\n===== Numerische Spalten (ohne Ziel, ohne id) =====")
     print(num_cols)
 
     # 14) Korrelation mit Ziel berechnen und nach Schwelle filtern
@@ -205,7 +214,6 @@ if __name__ == "__main__":
 
     threshold = 0.2
     selected_numeric = corr_with_target[abs(corr_with_target) > threshold].index.tolist()
-    selected_numeric = [c for c in selected_numeric if c != main_id_col]
 
     print(f"\n===== Ausgewählte numerische Features (|corr| > {threshold}) =====")
     print(selected_numeric)
@@ -217,11 +225,7 @@ if __name__ == "__main__":
 
     # 15) Features anwenden: gleicher Spalten-Subset auf Train & Test
 
-    # numerische + signifikante binned Features
     all_feature_cols = selected_numeric.copy()
-    for col in significant_binned:
-        if col in train.columns and col not in all_feature_cols:
-            all_feature_cols.append(col)
 
     print("\n===== Finale Feature-Spalten (numeric + binned) =====")
     print(all_feature_cols)
