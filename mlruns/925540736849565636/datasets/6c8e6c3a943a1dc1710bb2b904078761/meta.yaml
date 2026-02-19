@@ -1,0 +1,16 @@
+digest: ae2cd2a1
+name: dataset
+profile: '{"num_rows": 3200, "num_elements": 28800}'
+schema: '{"mlflow_colspec": [{"type": "double", "name": "study_focus_interaction",
+  "required": true}, {"type": "double", "name": "study_efficiency_log", "required":
+  true}, {"type": "double", "name": "sleep_quality_log", "required": true}, {"type":
+  "double", "name": "attendance_focus_interaction_log", "required": true}, {"type":
+  "double", "name": "screentime_focus_interaction", "required": true}, {"type": "double",
+  "name": "recreation_effort_score", "required": true}, {"type": "double", "name":
+  "screentime_to_sleep_ratio", "required": true}, {"type": "double", "name": "stress_level_bin",
+  "required": true}, {"type": "double", "name": "stress_level_bin.1", "required":
+  true}]}'
+source: '{"tags": {"mlflow.user": "nelid", "mlflow.source.name": "c:/Users/nelid/Documents/Kaggle
+  Competitions/Student Learning Competition/student-learning-competition/src/06_train_xgboost.py",
+  "mlflow.source.type": "LOCAL", "mlflow.source.git.commit": "b4d79c5cba96bdda672405743eabfe2f25e79607"}}'
+source_type: code

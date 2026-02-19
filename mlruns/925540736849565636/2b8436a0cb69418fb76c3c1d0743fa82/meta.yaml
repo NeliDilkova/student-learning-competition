@@ -1,8 +1,9 @@
 artifact_uri: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/2b8436a0cb69418fb76c3c1d0743fa82/artifacts
+deleted_time: 1771495727864
 end_time: 1771433184759
 entry_point_name: ''
 experiment_id: '925540736849565636'
-lifecycle_stage: active
+lifecycle_stage: deleted
 run_id: 2b8436a0cb69418fb76c3c1d0743fa82
 run_name: xgboost_baseline_v1
 source_name: ''
