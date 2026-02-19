@@ -81,7 +81,7 @@ def train_benchmark_with_fair_split():
     if TARGET_COL not in train_fe.columns:
         raise KeyError(f"Zielvariable '{TARGET_COL}' nicht in train_features_pruned.csv gefunden.")
 
-    # denselben Split wie in load_train_data verwenden
+    # denselben Split wie in load_train_data verwenden (Train/Val-IDs)
     X_full = train_fe.drop(columns=[TARGET_COL])
     y_full = train_fe[TARGET_COL]
 
@@ -124,16 +124,12 @@ def train_benchmark_with_fair_split():
     # ------------------------------------------------------
     # 5) Train/Val-Splits in Rohdaten über IDs nachbilden
     # ------------------------------------------------------
-    # Sicherstellen, dass ID_COL existiert
     if ID_COL not in train_raw_enc.columns:
-        raise KeyError(
-            f"ID-Spalte '{ID_COL}' nicht in den Rohdaten gefunden."
-        )
+        raise KeyError(f"ID-Spalte '{ID_COL}' nicht in den Rohdaten gefunden.")
 
     train_part = train_raw_enc[train_raw_enc[ID_COL].isin(train_ids)].copy()
     val_part = train_raw_enc[train_raw_enc[ID_COL].isin(val_ids)].copy()
 
-    # Überprüfen, ob Größe passt
     if len(train_part) != len(train_ids) or len(val_part) != len(val_ids):
         print(
             f"Warnung: Anzahl Zeilen nach ID-Mapping passt nicht exakt – "
@@ -142,35 +138,42 @@ def train_benchmark_with_fair_split():
         )
 
     # ------------------------------------------------------
-    # 6) Features/Targets definieren wie im Notebook
+    # 6) Innerhalb von train_part noch einen Test-Split erzeugen
     # ------------------------------------------------------
     if TARGET_COL not in train_part.columns:
-        raise KeyError(
-            f"Zielspalte '{TARGET_COL}' nicht in den Roh-Train-Daten vorhanden."
-        )
+        raise KeyError(f"Zielspalte '{TARGET_COL}' nicht in den Roh-Train-Daten vorhanden.")
 
-    X_train = train_part.drop(columns=[TARGET_COL, ID_COL], errors="ignore")
-    y_train = train_part[TARGET_COL]
+    X_full_bench = train_part.drop(columns=[TARGET_COL, ID_COL], errors="ignore")
+    y_full_bench = train_part[TARGET_COL]
 
-    X_val = val_part.drop(columns=[TARGET_COL, ID_COL], errors="ignore")
-    y_val = val_part[TARGET_COL]
+    # z.B. 20 % des Benchmark-Trainteils als Test-Holdout
+    X_train_bench, X_test_bench, y_train_bench, y_test_bench = train_test_split(
+        X_full_bench,
+        y_full_bench,
+        test_size=0.2,
+        random_state=RANDOM_STATE,
+    )
 
-    # Test-Features für evtl. spätere Submission
-    X_test = test_raw_enc.drop(columns=[ID_COL], errors="ignore")
+    # Val-Set entspricht weiterhin val_part (Benchmark-Features)
+    X_val_bench = val_part.drop(columns=[TARGET_COL, ID_COL], errors="ignore")
+    y_val_bench = val_part[TARGET_COL]
 
-    # Align wie im Notebook (auf Nummer sicher):
-    X_all = pd.concat([X_train, X_val], axis=0)
-    X_all, X_test = X_all.align(X_test, join="left", axis=1, fill_value=0)
+    # Kaggle-Test-Features (ohne Label)
+    X_kaggle_test = test_raw_enc.drop(columns=[ID_COL], errors="ignore")
 
-    # Nach Align wieder in Train/Val splitten
-    X_train = X_all.loc[X_train.index]
-    X_val = X_all.loc[X_val.index]
+    # Align wie im Notebook (Train+Val+Test vs. Kaggle-Test)
+    X_all = pd.concat([X_train_bench, X_val_bench, X_test_bench], axis=0)
+    X_all, X_kaggle_test = X_all.align(X_kaggle_test, join="left", axis=1, fill_value=0)
+
+    # Indizes rekonstruieren
+    X_train_bench = X_all.loc[X_train_bench.index]
+    X_val_bench = X_all.loc[X_val_bench.index]
+    X_test_bench = X_all.loc[X_test_bench.index]
 
     # ------------------------------------------------------
-    # 7) Modell trainieren (ohne KFold, nur Split)
+    # 7) Modell trainieren und Val + Test evaluieren
     # ------------------------------------------------------
     mlflow.set_experiment("student_learning_competition")
-  #  mlflow.xgboost.autolog()
 
     with mlflow.start_run(run_name=RUN_NAME):
         model = XGBRegressor(
@@ -185,26 +188,36 @@ def train_benchmark_with_fair_split():
         )
 
         model.fit(
-            X_train,
-            y_train,
-            eval_set=[(X_val, y_val)],
+            X_train_bench,
+            y_train_bench,
+            eval_set=[(X_val_bench, y_val_bench)],
             verbose=200,
         )
 
-        y_val_pred = model.predict(X_val)
-        rmse_val = np.sqrt(mean_squared_error(y_val, y_val_pred))
-        r2_val = r2_score(y_val, y_val_pred)
+        # Val
+        y_val_pred = model.predict(X_val_bench)
+        rmse_val = np.sqrt(mean_squared_error(y_val_bench, y_val_pred))
+        r2_val = r2_score(y_val_bench, y_val_pred)
+
+        # Test (Holdout aus train_part)
+        y_test_pred = model.predict(X_test_bench)
+        rmse_test = np.sqrt(mean_squared_error(y_test_bench, y_test_pred))
+        r2_test = r2_score(y_test_bench, y_test_pred)
 
         print(f"[Benchmark XGB] Validation RMSE: {rmse_val:.5f}")
         print(f"[Benchmark XGB] Validation R2:   {r2_val:.5f}")
+        print(f"[Benchmark XGB] Test RMSE:       {rmse_test:.5f}")
+        print(f"[Benchmark XGB] Test R2:         {r2_test:.5f}")
 
         mlflow.log_metric("val_rmse", float(rmse_val))
         mlflow.log_metric("val_r2", float(r2_val))
+        mlflow.log_metric("test_rmse", float(rmse_test))
+        mlflow.log_metric("test_r2", float(r2_test))
 
         # Feature Importances
         importances = model.feature_importances_
         fi_df = pd.DataFrame(
-            {"feature": X_train.columns, "importance": importances}
+            {"feature": X_train_bench.columns, "importance": importances}
         ).sort_values("importance", ascending=False)
 
         fi_path = project_dir / "models" / "feature_importances_benchmark_xgb.csv"
@@ -215,7 +228,8 @@ def train_benchmark_with_fair_split():
         print(fi_df)
 
         mlflow.log_artifact(str(fi_path), artifact_path="feature_importances")
-        mlflow.xgboost.log_model(model, name="benchmark_model")
+        mlflow.sklearn.log_model(model, artifact_path="benchmark_model")
+
 
 if __name__ == "__main__":
     train_benchmark_with_fair_split()
