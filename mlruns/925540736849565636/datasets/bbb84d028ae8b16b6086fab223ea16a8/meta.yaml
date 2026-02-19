@@ -1,0 +1,10 @@
+digest: ee22e0c1
+name: dataset
+profile: '{"features_shape": [12800, 9], "features_size": 115200, "features_nbytes":
+  460800}'
+schema: '{"mlflow_tensorspec": {"features": "[{\"type\": \"tensor\", \"tensor-spec\":
+  {\"dtype\": \"float32\", \"shape\": [-1, 9]}}]", "targets": null}}'
+source: '{"tags": {"mlflow.user": "nelid", "mlflow.source.name": "c:/Users/nelid/Documents/Kaggle
+  Competitions/Student Learning Competition/student-learning-competition/src/05_train_models.py",
+  "mlflow.source.type": "LOCAL", "mlflow.source.git.commit": "6ab79ba2c44e67bad8d83564f2b540797c7300d8"}}'
+source_type: code

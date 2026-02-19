@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/04d356464b8c40039ac0f72d2da60471/artifacts
+deleted_time: 1771433177168
+end_time: 1771432943355
+entry_point_name: ''
+experiment_id: '925540736849565636'
+lifecycle_stage: deleted
+run_id: 04d356464b8c40039ac0f72d2da60471
+run_name: luminous-swan-190
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771432924248
+status: 3
+tags: []
+user_id: nelid

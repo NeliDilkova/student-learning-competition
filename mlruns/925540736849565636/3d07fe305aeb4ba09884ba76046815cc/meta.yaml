@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/3d07fe305aeb4ba09884ba76046815cc/artifacts
+deleted_time: 1771433229001
+end_time: 1771433108231
+entry_point_name: ''
+experiment_id: '925540736849565636'
+lifecycle_stage: deleted
+run_id: 3d07fe305aeb4ba09884ba76046815cc
+run_name: big-moth-295
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771433089852
+status: 3
+tags: []
+user_id: nelid

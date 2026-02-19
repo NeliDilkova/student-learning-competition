@@ -1,0 +1,22 @@
+artifact_path: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/models/m-00631d980c024891abda83092862c0bb/artifacts
+flavors:
+  python_function:
+    data: model.xgb
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.9.25
+  xgboost:
+    code: null
+    data: model.xgb
+    model_class: xgboost.sklearn.XGBRegressor
+    model_format: xgb
+    xgb_version: 2.1.4
+mlflow_version: 3.1.4
+model_id: m-00631d980c024891abda83092862c0bb
+model_size_bytes: 2739526
+model_uuid: m-00631d980c024891abda83092862c0bb
+prompts: null
+run_id: 2b8436a0cb69418fb76c3c1d0743fa82
+utc_time_created: '2026-02-18 16:46:20.638231'

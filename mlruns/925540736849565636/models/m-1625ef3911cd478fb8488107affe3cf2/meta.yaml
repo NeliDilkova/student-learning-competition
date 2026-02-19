@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/models/m-1625ef3911cd478fb8488107affe3cf2/artifacts
+creation_timestamp: 1771433173514
+experiment_id: '925540736849565636'
+last_updated_timestamp: 1771433180081
+model_id: m-1625ef3911cd478fb8488107affe3cf2
+model_type: null
+name: model
+source_run_id: 2b8436a0cb69418fb76c3c1d0743fa82
+status: 2
+status_message: null

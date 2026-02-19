@@ -1,17 +1,18 @@
 # src/05_train_models.py
 
-import pandas as pd
 from pathlib import Path
 
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
 import numpy as np
-import xgboost as xgb 
+import pandas as pd
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+import xgboost as xgb
 import mlflow
 import mlflow.xgboost  # für Autologging
 
 
 print("Top of file reached")
+
 
 def get_project_root() -> Path:
     return Path(__file__).resolve().parents[1]
@@ -19,11 +20,10 @@ def get_project_root() -> Path:
 
 if __name__ == "__main__":
     print("__main__ block entered")
-    print("__main__ block entered")
 
     project_dir = get_project_root()
     print("project_dir:", project_dir)
-    
+
     data_features_dir = project_dir / "data" / "features"
     print("data_features_dir:", data_features_dir)
 
@@ -47,18 +47,16 @@ if __name__ == "__main__":
         raise KeyError(f"Zielvariable '{target_col}' nicht in TRAIN_FEATURES gefunden")
 
     # 1) Feature-Listen bestimmen
-    # Numerische Features (ohne id, ohne Ziel)
-    num_features = train_fe.select_dtypes(
-        include=["int64", "float64", "float32"]
-    ).columns.tolist()
+    num_features = (
+        train_fe.select_dtypes(include=["int64", "float64", "float32"])
+        .columns.tolist()
+    )
     num_features = [c for c in num_features if c not in [id_col, target_col]]
 
-    # Kategoriale Features
-    cat_features = train_fe.select_dtypes(
-        include=["category", "object"]
-    ).columns.tolist()
-    # Oder explizit:
-    # cat_features = ["stress_level_bin", "breaks_per_day_bin", "age_bin"]
+    cat_features = (
+        train_fe.select_dtypes(include=["category", "object"])
+        .columns.tolist()
+    )
 
     print("\nNumerische Features:")
     print(num_features)
@@ -82,10 +80,11 @@ if __name__ == "__main__":
     # 5) MLflow-Experiment setzen
     mlflow.set_experiment("student_learning_competition")
 
-    # XGBoost Autologging aktivieren (optional, aber praktisch)
     mlflow.xgboost.autolog()
 
-    with mlflow.start_run():
+    run_name = "xgboost_baseline_v1"
+
+    with mlflow.start_run(run_name=run_name):
         # 6) Modell definieren
         model = xgb.XGBRegressor(
             n_estimators=1000,
@@ -99,30 +98,48 @@ if __name__ == "__main__":
             random_state=42,
             n_jobs=-1,
             tree_method="hist",
-            enable_categorical=True,  # wichtig für category-Features
+            enable_categorical=True,
+            eval_metric="rmse",
         )
 
-        # 7) Training mit Early Stopping
+        # 7) Training (ohne early_stopping_rounds, da deine Version das nicht im fit() erwartet)
         model.fit(
             X_train,
             y_train,
             eval_set=[(X_train, y_train), (X_val, y_val)],
-            eval_metric="rmse",
             verbose=False,
-            early_stopping_rounds=50,
         )
 
-        # 8) Evaluation
+        # 8) Evaluation: RMSE und R²
         y_pred = model.predict(X_val)
         rmse = np.sqrt(mean_squared_error(y_val, y_pred))
+        r2 = r2_score(y_val, y_pred)
 
         print(f"\nValidation RMSE: {rmse:.5f}")
+        print(f"Validation R2:   {r2:.5f}")
 
-        # 9) Metriken/Parameter loggen
         mlflow.log_metric("val_rmse", float(rmse))
+        mlflow.log_metric("val_r2", float(r2))  # R² loggen
+
         mlflow.log_param("num_features", len(feature_cols))
         mlflow.log_param("num_numeric_features", len(num_features))
         mlflow.log_param("num_categorical_features", len(cat_features))
 
-        # Modell explizit loggen (optional, Autologging macht es auch)
+        # 9) Feature Importances (Beitrage der einzelnen Variablen)
+        importances = model.feature_importances_  # array in Feature-Reihenfolge[web:439][web:432]
+        fi_df = pd.DataFrame(
+            {"feature": feature_cols, "importance": importances}
+        ).sort_values("importance", ascending=False)
+
+        print("\nFeature Importances:")
+        print(fi_df)
+
+        # als CSV speichern und als Artifact loggen
+        fi_path = project_dir / "models" / "feature_importances_xgb.csv"
+        fi_path.parent.mkdir(parents=True, exist_ok=True)
+        fi_df.to_csv(fi_path, index=False)
+
+        mlflow.log_artifact(str(fi_path), artifact_path="feature_importances")  #[web:437][web:441]
+
+        # Modell explizit loggen (Autologging macht es eigentlich schon)
         mlflow.xgboost.log_model(model, artifact_path="model")

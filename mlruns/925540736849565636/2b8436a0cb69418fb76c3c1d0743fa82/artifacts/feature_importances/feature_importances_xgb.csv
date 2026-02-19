@@ -1,0 +1,10 @@
+feature,importance
+study_focus_interaction,0.35894054
+study_efficiency_log,0.24680953
+sleep_quality_log,0.13344668
+stress_level_bin.1,0.10339592
+stress_level_bin,0.08118281
+attendance_focus_interaction_log,0.031656798
+recreation_effort_score,0.02206597
+screentime_to_sleep_ratio,0.018232865
+screentime_focus_interaction,0.004268913
