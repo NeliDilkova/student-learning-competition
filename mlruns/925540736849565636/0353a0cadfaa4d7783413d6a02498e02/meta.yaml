@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/0353a0cadfaa4d7783413d6a02498e02/artifacts
+deleted_time: 1771501763704
+end_time: null
+entry_point_name: ''
+experiment_id: '925540736849565636'
+lifecycle_stage: deleted
+run_id: 0353a0cadfaa4d7783413d6a02498e02
+run_name: elasticnet_experiment_v1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771501506583
+status: 1
+tags: []
+user_id: nelid

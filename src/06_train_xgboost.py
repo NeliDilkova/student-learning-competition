@@ -10,6 +10,7 @@ import mlflow.xgboost
 
 from prepare_to_train import load_train_data  # gemeinsamer Loader
 
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
 
 if __name__ == "__main__":
     (
@@ -24,7 +25,7 @@ if __name__ == "__main__":
     ) = load_train_data()
 
     mlflow.set_experiment("student_learning_competition")
-    mlflow.xgboost.autolog()
+#    mlflow.xgboost.autolog()
 
     run_name = "xgboost_experiment_v1"
 

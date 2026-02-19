@@ -1,0 +1,22 @@
+artifact_path: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/models/m-43efe1eed5cd43a699de42e8b4520334/artifacts
+flavors:
+  catboost:
+    catboost_version: 1.2.10
+    code: null
+    data: model.cb
+    model_type: CatBoostRegressor
+    save_format: cbm
+  python_function:
+    data: model.cb
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.catboost
+    python_version: 3.9.25
+mlflow_version: 3.1.4
+model_id: m-43efe1eed5cd43a699de42e8b4520334
+model_size_bytes: 1142592
+model_uuid: m-43efe1eed5cd43a699de42e8b4520334
+prompts: null
+run_id: b8e6a841fcf345cabd4a441dbc663165
+utc_time_created: '2026-02-19 11:36:41.114482'

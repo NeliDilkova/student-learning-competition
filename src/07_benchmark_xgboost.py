@@ -13,7 +13,7 @@ import mlflow.sklearn
 from prepare_to_train import get_project_root as get_root_prepare, TARGET_COL, ID_COL
 from sklearn.model_selection import train_test_split
 
-
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
 
 RUN_NAME = "benchmark_xgboost_kaggle_features_fair_split"
 RANDOM_STATE = 42
@@ -170,7 +170,7 @@ def train_benchmark_with_fair_split():
     # 7) Modell trainieren (ohne KFold, nur Split)
     # ------------------------------------------------------
     mlflow.set_experiment("student_learning_competition")
-    mlflow.xgboost.autolog()
+  #  mlflow.xgboost.autolog()
 
     with mlflow.start_run(run_name=RUN_NAME):
         model = XGBRegressor(

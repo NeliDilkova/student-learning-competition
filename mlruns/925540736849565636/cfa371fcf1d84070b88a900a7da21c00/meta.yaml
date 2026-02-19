@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/cfa371fcf1d84070b88a900a7da21c00/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '925540736849565636'
+lifecycle_stage: active
+run_id: cfa371fcf1d84070b88a900a7da21c00
+run_name: benchmark_xgboost_kaggle_features_fair_split
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771503389794
+status: 1
+tags: []
+user_id: nelid
