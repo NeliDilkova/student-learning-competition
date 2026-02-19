@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/92064efdd5924ea4998ae97e49bd8b98/artifacts
+deleted_time: 1771499481453
+end_time: null
+entry_point_name: ''
+experiment_id: '925540736849565636'
+lifecycle_stage: deleted
+run_id: 92064efdd5924ea4998ae97e49bd8b98
+run_name: lightgbm_experiment_v1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771499308704
+status: 1
+tags: []
+user_id: nelid

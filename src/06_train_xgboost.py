@@ -26,7 +26,7 @@ if __name__ == "__main__":
     mlflow.set_experiment("student_learning_competition")
     mlflow.xgboost.autolog()
 
-    run_name = "xgboost_baseline_v1"
+    run_name = "xgboost_experiment_v1"
 
     with mlflow.start_run(run_name=run_name):
         model = xgb.XGBRegressor(

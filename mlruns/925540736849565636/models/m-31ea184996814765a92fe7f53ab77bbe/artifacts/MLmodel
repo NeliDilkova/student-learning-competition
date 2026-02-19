@@ -1,0 +1,44 @@
+artifact_path: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/models/m-31ea184996814765a92fe7f53ab77bbe/artifacts
+flavors:
+  python_function:
+    data: model.xgb
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.9.25
+  xgboost:
+    code: null
+    data: model.xgb
+    model_class: xgboost.sklearn.XGBRegressor
+    model_format: xgb
+    xgb_version: 2.1.4
+is_signature_from_type_hint: false
+mlflow_version: 3.1.4
+model_id: m-31ea184996814765a92fe7f53ab77bbe
+model_size_bytes: 7041939
+model_uuid: m-31ea184996814765a92fe7f53ab77bbe
+prompts: null
+run_id: 5e506e60eb9142ce9896ced728c73bbf
+signature:
+  inputs: '[{"type": "long", "name": "student_id", "required": true}, {"type": "long",
+    "name": "age", "required": true}, {"type": "long", "name": "gender", "required":
+    true}, {"type": "double", "name": "study_hours_per_day", "required": true}, {"type":
+    "double", "name": "sleep_hours", "required": true}, {"type": "double", "name":
+    "phone_usage_hours", "required": true}, {"type": "double", "name": "social_media_hours",
+    "required": true}, {"type": "double", "name": "youtube_hours", "required": true},
+    {"type": "double", "name": "gaming_hours", "required": true}, {"type": "long",
+    "name": "breaks_per_day", "required": true}, {"type": "long", "name": "coffee_intake_mg",
+    "required": true}, {"type": "long", "name": "exercise_minutes", "required": true},
+    {"type": "long", "name": "assignments_completed", "required": true}, {"type":
+    "double", "name": "attendance_percentage", "required": true}, {"type": "long",
+    "name": "stress_level", "required": true}, {"type": "long", "name": "focus_score",
+    "required": true}, {"type": "double", "name": "final_grade", "required": true},
+    {"type": "double", "name": "study_efficiency", "required": true}, {"type": "double",
+    "name": "sleep_quality", "required": true}, {"type": "double", "name": "distraction_score",
+    "required": true}, {"type": "double", "name": "productivity_index", "required":
+    true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "float32", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-02-19 10:49:01.431699'

@@ -1,0 +1,35 @@
+artifact_path: file:///C:/Users/nelid/Documents/Kaggle%20Competitions/Student%20Learning%20Competition/student-learning-competition/mlruns/925540736849565636/models/m-bd455cec24bc4b7284cb8a00e0f7c183/artifacts
+flavors:
+  python_function:
+    data: model.xgb
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.9.25
+  xgboost:
+    code: null
+    data: model.xgb
+    model_class: xgboost.sklearn.XGBRegressor
+    model_format: xgb
+    xgb_version: 2.1.4
+is_signature_from_type_hint: false
+mlflow_version: 3.1.4
+model_id: m-bd455cec24bc4b7284cb8a00e0f7c183
+model_size_bytes: 2739532
+model_uuid: m-bd455cec24bc4b7284cb8a00e0f7c183
+prompts: null
+run_id: 3b986b3099e647c8b0b07d42a0354136
+signature:
+  inputs: '[{"type": "double", "name": "study_focus_interaction", "required": true},
+    {"type": "double", "name": "study_efficiency_log", "required": true}, {"type":
+    "double", "name": "sleep_quality_log", "required": true}, {"type": "double", "name":
+    "attendance_focus_interaction_log", "required": true}, {"type": "double", "name":
+    "screentime_focus_interaction", "required": true}, {"type": "double", "name":
+    "recreation_effort_score", "required": true}, {"type": "double", "name": "screentime_to_sleep_ratio",
+    "required": true}, {"type": "double", "name": "stress_level_bin", "required":
+    true}, {"type": "double", "name": "stress_level_bin.1", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "float32", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-02-19 10:50:16.015899'

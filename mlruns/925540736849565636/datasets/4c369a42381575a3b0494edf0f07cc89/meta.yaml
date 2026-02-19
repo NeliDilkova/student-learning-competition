@@ -1,0 +1,23 @@
+digest: 29364c36
+name: dataset
+profile: '{"num_rows": 3200, "num_elements": 67200}'
+schema: '{"mlflow_colspec": [{"type": "long", "name": "student_id", "required": true},
+  {"type": "long", "name": "age", "required": true}, {"type": "long", "name": "gender",
+  "required": true}, {"type": "double", "name": "study_hours_per_day", "required":
+  true}, {"type": "double", "name": "sleep_hours", "required": true}, {"type": "double",
+  "name": "phone_usage_hours", "required": true}, {"type": "double", "name": "social_media_hours",
+  "required": true}, {"type": "double", "name": "youtube_hours", "required": true},
+  {"type": "double", "name": "gaming_hours", "required": true}, {"type": "long", "name":
+  "breaks_per_day", "required": true}, {"type": "long", "name": "coffee_intake_mg",
+  "required": true}, {"type": "long", "name": "exercise_minutes", "required": true},
+  {"type": "long", "name": "assignments_completed", "required": true}, {"type": "double",
+  "name": "attendance_percentage", "required": true}, {"type": "long", "name": "stress_level",
+  "required": true}, {"type": "long", "name": "focus_score", "required": true}, {"type":
+  "double", "name": "final_grade", "required": true}, {"type": "double", "name": "study_efficiency",
+  "required": true}, {"type": "double", "name": "sleep_quality", "required": true},
+  {"type": "double", "name": "distraction_score", "required": true}, {"type": "double",
+  "name": "productivity_index", "required": true}]}'
+source: '{"tags": {"mlflow.user": "nelid", "mlflow.source.name": "c:/Users/nelid/Documents/Kaggle
+  Competitions/Student Learning Competition/student-learning-competition/src/07_benchmark_xgboost.py",
+  "mlflow.source.type": "LOCAL", "mlflow.source.git.commit": "f8fb1fdc8c4555d4f291a0714b5bad0b057a8a9d"}}'
+source_type: code

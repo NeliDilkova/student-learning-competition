@@ -1,0 +1,10 @@
+digest: 9cc7296c
+name: dataset
+profile: '{"features_shape": [12800, 21], "features_size": 268800, "features_nbytes":
+  1075200}'
+schema: '{"mlflow_tensorspec": {"features": "[{\"type\": \"tensor\", \"tensor-spec\":
+  {\"dtype\": \"float32\", \"shape\": [-1, 21]}}]", "targets": null}}'
+source: '{"tags": {"mlflow.user": "nelid", "mlflow.source.name": "c:/Users/nelid/Documents/Kaggle
+  Competitions/Student Learning Competition/student-learning-competition/src/07_benchmark_xgboost.py",
+  "mlflow.source.type": "LOCAL", "mlflow.source.git.commit": "f8fb1fdc8c4555d4f291a0714b5bad0b057a8a9d"}}'
+source_type: code
